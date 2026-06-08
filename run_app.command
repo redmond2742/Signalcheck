@@ -19,4 +19,4 @@ echo "On this computer, open:    http://localhost:$PORT"
 echo "Press Ctrl+C to stop."
 echo
 
-exec "$PY" run flash_app.py --server.address 0.0.0.0 --server.port "$PORT"
+exec "$PY" run app.py --server.address 0.0.0.0 --server.port "$PORT"

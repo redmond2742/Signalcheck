@@ -1,8 +1,20 @@
-# 🚦 4-Way Flash Schedule Checker
+# 🚦 SignalCheck — Traffic Signal Timing Sheet Toolkit
 
-Scans traffic-signal controller configuration exports (`.xls`) and flags any
-signal whose **schedule commands 4-way flash**.
+**SignalCheck** is a web app for inspecting and auditing traffic-signal
+controller timing-sheet exports (`.xls`). It opens to a home page that links to
+each tool, and it's built so new tools can be added easily over time.
 
+It can run on one computer (a "server") and be opened from any other computer on
+the same network.
+
+### Tools
+
+| Tool | What it does |
+|------|--------------|
+| **🚦 4-Way Flash Checker** | Scans controller `.xls` exports and flags any signal whose schedule commands 4-way flash (pattern 255). |
+| *(more to come)* | New tools appear here automatically as they're added. |
+
+#### How the 4-Way Flash Checker works
 It follows the same chain an engineer would check by hand:
 
 1. **Actions (4.5)** – finds every Action whose **Pattern = 255** (255 = 4-way flash).
@@ -15,13 +27,8 @@ It follows the same chain an engineer would check by hand:
    Plan that runs a flash action.
 
 It works on these controllers' legacy `.xls` exports even though they use a
-slightly malformed file wrapper that normal Excel readers reject.
-
-There are two ways to use it:
-
-- **Web app (`flash_app.py`)** – a point-and-click GUI you can run on one
-  computer and open from any other computer on the network.
-- **Command line (`flash_check.py`)** – for batch/automation use.
+slightly malformed file wrapper that normal Excel readers reject. Each tool's
+analysis engine can also be used from the command line (see section 5).
 
 ---
 
@@ -29,8 +36,12 @@ There are two ways to use it:
 
 | File | What it is |
 |------|------------|
-| `flash_app.py` | The web app (Streamlit GUI) |
-| `flash_check.py` | The analysis engine + command-line tool |
+| `app.py` | **The web app to run** — SignalCheck home page + navigation |
+| `home.py` | The landing page (auto-built from the tool list) |
+| `tool_registry.py` | The list of tools — **the one place you edit to add a tool** |
+| `tools/` | One file per tool's UI (e.g. `tools/flash_check_tool.py`) |
+| `flash_check.py` | The 4-way-flash analysis engine + command-line tool |
+| `flash_app.py` | Optional standalone launcher for just the flash checker |
 | `requirements.txt` | The Python packages it needs |
 | `setup.bat` | One-click **Windows** installer (creates the environment + installs packages) |
 | `run_app.bat` | One-click launcher for **Windows** |
@@ -101,13 +112,16 @@ On OTHER computers, open one of the IPv4 addresses below, e.g. http://192.168.x.
 ### macOS
 Double-click **`run_app.command`**, or in Terminal:
 ```bash
-.env/bin/streamlit run flash_app.py        # or:  .venv/bin/streamlit run flash_app.py
+.env/bin/streamlit run app.py        # or:  .venv/bin/streamlit run app.py
 ```
 
 ### Open it
 - **On the same computer:** go to <http://localhost:8501> in any browser.
 - **From another computer on the network:** use the server's IP address, e.g.
   `http://192.168.1.42:8501`.
+
+You'll land on the **SignalCheck home page**; click a tool to open it, and use the
+sidebar (top-left **»**) to switch between Home and the tools at any time.
 
 To stop the app, press **Ctrl+C** in the window (or just close it).
 
@@ -136,7 +150,8 @@ Then other people open `http://<that-ip>:8501`.
 
 ## 4. Using the app
 
-The app has two tabs:
+From the **home page**, click **🚦 4-Way Flash Checker** (or pick it in the
+sidebar). That tool has two tabs:
 
 ### 📤 Upload files
 Drag and drop one or more `.xls` controller exports onto the upload box (you can
@@ -220,13 +235,43 @@ instead of plain `pip` guarantees it installs into the Python you're running.
 Another copy is already running, or something else uses that port. Either close
 the other window, or run on a different port:
 ```
-streamlit run flash_app.py --server.port 8600
+streamlit run app.py --server.port 8600
 ```
 
 **A file shows 🔴 Error**
 It's either not a controller config workbook (the app skips non-matching `.xls`
 files) or it's a newer `.xlsx` file. These tools currently read the legacy `.xls`
 export format.
+
+---
+
+## 7. Adding a new tool (for developers)
+
+The suite is built to grow. Adding a tool takes two steps:
+
+1. **Create the tool's page.** Copy `tools/_template_tool.py` to
+   `tools/your_tool.py` and build its UI (it's a normal Streamlit script).
+   - Don't call `st.set_page_config` — `app.py` does that once for the whole suite.
+   - Prefix any `st.session_state` keys with something unique so tools don't
+     collide.
+   - Put reusable analysis logic in its own module (like `flash_check.py`) so it
+     can power a command-line tool too.
+
+2. **Register it.** Add an entry to the `TOOLS` list in `tool_registry.py`:
+   ```python
+   {
+       "key": "yourtool",
+       "title": "Your Tool Name",
+       "icon": "🧰",
+       "page": "tools/your_tool.py",
+       "tagline": "One short line for the home-page card.",
+       "status": "live",      # or "soon" to show it as Coming soon
+   }
+   ```
+
+That's all — the new tool automatically gets a card on the home page and an entry
+in the sidebar. To **rebrand** the whole suite (name, tagline, icon), edit the
+`SUITE_*` values at the top of `tool_registry.py`.
 
 ---
 

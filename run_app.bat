@@ -23,6 +23,6 @@ echo.
 echo   (Press Ctrl+C in this window to stop the app.)
 echo.
 
-"%STREAMLIT%" run flash_app.py --server.address 0.0.0.0 --server.port %PORT%
+"%STREAMLIT%" run app.py --server.address 0.0.0.0 --server.port %PORT%
 
 pause
