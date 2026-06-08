@@ -1,0 +1,16 @@
+# Streamlit configuration for the 4-Way Flash Checker.
+# These defaults make `streamlit run flash_app.py` serve to the whole LAN.
+
+[server]
+headless = true          # don't try to auto-open a browser on the server
+address = "0.0.0.0"      # listen on all network interfaces (reachable from other PCs)
+port = 8501              # open http://<server-ip>:8501 from other computers
+maxUploadSize = 100      # MB; controller .xls files are small, but allow batches
+enableXsrfProtection = true
+
+[browser]
+gatherUsageStats = false
+
+[theme]
+primaryColor = "#d9534f"          # red accent (flash = warning)
+base = "light"

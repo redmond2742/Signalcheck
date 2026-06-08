@@ -1,0 +1,101 @@
+file,intersection,controller_id,has_scheduled_flash,flash_on_disabled_slots_only,flash_actions,flash_day_plans,trigger_detail,error
+1.xls,YVR @ Oakland                        BBU,1,no,no,,,,LookupError: Actions(4.5) sheet not found
+10.xls,YVR + John Muir Hospital        BBU,10,no,no,,,,LookupError: Actions(4.5) sheet not found
+100.xls,California - BART Ped               BBU,100,no,no,,,,LookupError: Actions(4.5) sheet not found
+11.xls,YVR @ San Carlos Dr.                BBU,11,no,no,,,,LookupError: Actions(4.5) sheet not found
+12.xls,YVR @ Bancroft-Walnut             BBU,12,no,no,,,,LookupError: Actions(4.5) sheet not found
+13.xls,YVR @ Wimbledon                    BBU,13,no,no,,,,LookupError: Actions(4.5) sheet not found
+14.xls,YVR @ Wiget Lane                     BBU,14,no,no,,,,LookupError: Actions(4.5) sheet not found
+15.xls,YVR @ Via Monte                      BBU,15,no,no,,,,LookupError: Actions(4.5) sheet not found
+16.xls,YVR @ Oak Grove (TPCLT)         BBU,16,no,no,,,,LookupError: Actions(4.5) sheet not found
+17.xls,Oak Grove + Citrus,17,no,no,,,,LookupError: Actions(4.5) sheet not found
+18.xls,Oak Grove + Shadelands,18,no,no,,,,LookupError: Actions(4.5) sheet not found
+19.xls,Oak Grove @ Peachwillow        BBU,19,no,no,,,,LookupError: Actions(4.5) sheet not found
+2.xls,YVR @ California                      BBU,2,no,no,,,,LookupError: Actions(4.5) sheet not found
+20.xls,Oak Grove - Canal Trail,20,no,no,,,,LookupError: Actions(4.5) sheet not found
+21.xls,Main @ California                      BBU,21,no,no,,,,LookupError: Actions(4.5) sheet not found
+22.xls,California @ Pringle,22,no,no,,,,LookupError: Actions(4.5) sheet not found
+23.xls,California @ Lacassie,23,no,no,,,,LookupError: Actions(4.5) sheet not found
+24.xls,California @ Civic,24,no,no,,,,LookupError: Actions(4.5) sheet not found
+25.xls,California @ Bonanza,25,no,no,,,,LookupError: Actions(4.5) sheet not found
+26.xls,California @ Mt. Diablo             BBU,26,no,no,,,,LookupError: Actions(4.5) sheet not found
+27.xls,California @ Olympic                 BBU,27,no,no,,,,LookupError: Actions(4.5) sheet not found
+28.xls,California @ Newell,28,no,no,,,,LookupError: Actions(4.5) sheet not found
+29.xls,Main @ Newell                          BBU,29,no,no,,,,LookupError: Actions(4.5) sheet not found
+3.xls,YVR @ Main                              BBU,3,no,no,,,,LookupError: Actions(4.5) sheet not found
+30.xls,S. Main @ Lilac,30,no,no,,,,LookupError: Actions(4.5) sheet not found
+31.xls,Main + Creekside                     BBU,31,no,no,,,,LookupError: Actions(4.5) sheet not found
+32.xls,Main @ Pringle                          BBU,32,no,no,,,,LookupError: Actions(4.5) sheet not found
+33.xls,Main + Lacassie,33,no,no,,,,LookupError: Actions(4.5) sheet not found
+34.xls,Civic @ Main                             BBU,34,no,no,,,,LookupError: Actions(4.5) sheet not found
+35.xls,Broadway @ Civic                       BBU,35,no,no,,,,LookupError: Actions(4.5) sheet not found
+36.xls,Civic @ Locust,36,no,no,,,,LookupError: Actions(4.5) sheet not found
+37.xls,Locust @ Bonanza,37,no,no,,,,LookupError: Actions(4.5) sheet not found
+38.xls,Main + Bonanza,38,no,no,,,,LookupError: Actions(4.5) sheet not found
+39.xls,Main @ Cypress,39,no,no,,,,LookupError: Actions(4.5) sheet not found
+4.xls,YVR @ Broadway                      BBU,4,no,no,,,,LookupError: Actions(4.5) sheet not found
+40.xls,Broadway @ Cypress,40,no,no,,,,LookupError: Actions(4.5) sheet not found
+41.xls,Mt. Diablo @ Bonanza,41,no,no,,,,LookupError: Actions(4.5) sheet not found
+42.xls,Mt. Diablo @ Locust,42,no,no,,,,LookupError: Actions(4.5) sheet not found
+43.xls,Mt. Diablo @ Main                   BBU,43,no,no,,,,LookupError: Actions(4.5) sheet not found
+44.xls,Mt. Diablo @ Broadway            BBU,44,no,no,,,,LookupError: Actions(4.5) sheet not found
+45.xls,S. Main @ Olympic,45,no,no,,,,LookupError: Actions(4.5) sheet not found
+46.xls,S Main @ Broadway Pz          BBU,46,no,no,,,,LookupError: Actions(4.5) sheet not found
+47.xls,Broadway @ Newell                  BBU,47,no,no,,,,LookupError: Actions(4.5) sheet not found
+48.xls,Olympic @ Alpine                      BBU,48,no,no,,,,LookupError: Actions(4.5) sheet not found
+49.xls,N. Main @ Sunnyvale - I680       BBU,49,no,no,,,,LookupError: Actions(4.5) sheet not found
+5.xls,YVR @ Civic Dr                          BBU,5,no,no,,,,LookupError: Actions(4.5) sheet not found
+50.xls,Main @ Geary  (TPCLT)          BBU,50,no,no,,,,LookupError: Actions(4.5) sheet not found
+51.xls,Main @ Second,51,no,no,,,,LookupError: Actions(4.5) sheet not found
+52.xls,Main @ San Luis,52,no,no,,,,LookupError: Actions(4.5) sheet not found
+53.xls,Main + Penniman                     BBU,53,no,no,,,,LookupError: Actions(4.5) sheet not found
+54.xls,Main @ Parkside                        BBU,54,no,no,,,,LookupError: Actions(4.5) sheet not found
+55.xls,Mt. Diablo @ Pisgah,55,no,no,,,,LookupError: Actions(4.5) sheet not found
+56.xls,S. Main @ Botelho,56,no,no,,,,LookupError: Actions(4.5) sheet not found
+57.xls,Mt. Diablo @ Blvd Way (TPCLT) BBU,57,no,no,,,,LookupError: Actions(4.5) sheet not found
+58.xls,Mt. Diablo @ Oakland,58,no,no,,,,LookupError: Actions(4.5) sheet not found
+59.xls,California @ Botelho                 BBU,59,no,no,,,,LookupError: Actions(4.5) sheet not found
+6.xls,YVR @ Walnut Blvd                   BBU,6,no,no,,,,LookupError: Actions(4.5) sheet not found
+60.xls,Broadway @ Lincoln                   BBU,60,no,no,,,,LookupError: Actions(4.5) sheet not found
+61.xls,Civic + Pine,61,no,no,,,,LookupError: Actions(4.5) sheet not found
+62.xls,Civic @ Walden,62,no,no,,,,LookupError: Actions(4.5) sheet not found
+63.xls,Civic @ Parkside,63,no,no,,,,LookupError: Actions(4.5) sheet not found
+64.xls,Parkside + Broadway,64,no,no,,,,LookupError: Actions(4.5) sheet not found
+65.xls,Treat @ Carriage                       BBU,65,no,no,,,,LookupError: Actions(4.5) sheet not found
+66.xls,Treat Blvd @ Bancroft               BBU,66,no,no,,,,LookupError: Actions(4.5) sheet not found
+67.xls,Treat Blvd @ Candelero            BBU,67,no,no,,,,LookupError: Actions(4.5) sheet not found
+68.xls,Parkside & Lawrence On-ramp BBU,68,no,no,,,,LookupError: Actions(4.5) sheet not found
+69.xls,Lawrence @ Lawrence              BBU,69,no,no,,,,LookupError: Actions(4.5) sheet not found
+7.xls,YVR @ Homestead Ave            BBU,7,no,no,,,,LookupError: Actions(4.5) sheet not found
+70.xls,Lawrence @ Penniman,70,no,no,,,,LookupError: Actions(4.5) sheet not found
+71.xls,Oak Rd. - Canal,71,no,no,,,,LookupError: Actions(4.5) sheet not found
+72.xls,Mt. Diablo @ Alpine,72,no,no,,,,LookupError: Actions(4.5) sheet not found
+73.xls,Bancroft @ Pomar,73,no,no,,,,LookupError: Actions(4.5) sheet not found
+74.xls,Bancroft + Minert,74,no,no,,,,LookupError: Actions(4.5) sheet not found
+75.xls,Bancroft - Canal,75,no,no,,,,LookupError: Actions(4.5) sheet not found
+76.xls,Bancroft @ Banbury,76,no,no,,,,LookupError: Actions(4.5) sheet not found
+77.xls,Maria Lane @ Newell Ave       BBU,77,no,no,,,,LookupError: Actions(4.5) sheet not found
+78.xls,Olympic @ Locust,78,no,no,,,,LookupError: Actions(4.5) sheet not found
+79.xls,YVR & Lennon Ln                       BBU,79,no,no,,,,LookupError: Actions(4.5) sheet not found
+8.xls,YVR @ Marchbanks-Tampico   BBU,8,no,no,,,,LookupError: Actions(4.5) sheet not found
+80.xls,YVR & I-680 On-Ramp              BBU,80,no,no,,,,LookupError: Actions(4.5) sheet not found
+81.xls,Geary - Canal,81,no,no,,,,LookupError: Actions(4.5) sheet not found
+82.xls,Tice @ Rolling Hills,82,no,no,,,,LookupError: Actions(4.5) sheet not found
+83.xls,Tice @ Rossmoor                      BBU,83,no,no,,,,LookupError: Actions(4.5) sheet not found
+84.xls,Geary @ Buena Vista              BBU,84,no,no,,,,LookupError: Actions(4.5) sheet not found
+85.xls,Walnut @ Blackstone,85,no,no,,,,LookupError: Actions(4.5) sheet not found
+86.xls,Walnut Ave @ Wiget,86,no,no,,,,LookupError: Actions(4.5) sheet not found
+87.xls,Geary @ Camino Verde          BBU,87,no,no,,,,LookupError: Actions(4.5) sheet not found
+88.xls,S. Main + SB I680,88,no,no,,,,LookupError: Actions(4.5) sheet not found
+89.xls,Olympic and I680,89,no,no,,,,LookupError: Actions(4.5) sheet not found
+9.xls,YVR @ La Casa Via                    BBU,9,no,no,,,,LookupError: Actions(4.5) sheet not found
+90.xls,Olympic @ Paulsen-SB I680 Off-ramp BBU,90,no,no,,,,LookupError: Actions(4.5) sheet not found
+91.xls,Treat Blvd and Buskirk-I680,91,no,no,,,,LookupError: Actions(4.5) sheet not found
+92.xls,Treat @ Oak Rd,92,no,no,,,,LookupError: Actions(4.5) sheet not found
+93.xls,Treat Blvd @ Jones Rd          BBU,93,no,no,,,,LookupError: Actions(4.5) sheet not found
+94.xls,Treat Blvd @ Cherry Ln,94,no,no,,,,LookupError: Actions(4.5) sheet not found
+95.xls,Oak @ Jones,95,no,no,,,,LookupError: Actions(4.5) sheet not found
+96.xls,Main @ Castle Hill,96,no,no,,,,LookupError: Actions(4.5) sheet not found
+97.xls,Broadway @ Nordstrom            BBU,97,no,no,,,,LookupError: Actions(4.5) sheet not found
+98.xls,Geary @ Pioneer                      BBU,98,no,no,,,,LookupError: Actions(4.5) sheet not found
+99.xls,Civic + Brio                         BBU,99,no,no,,,,LookupError: Actions(4.5) sheet not found
