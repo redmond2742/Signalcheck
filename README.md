@@ -12,6 +12,7 @@ the same network.
 | Tool | What it does |
 |------|--------------|
 | **🚦 4-Way Flash Checker** | Scans controller `.xls` exports and flags any signal whose schedule commands 4-way flash (pattern 255). |
+| **🗺️ Cycle Length Map** | Maps every signal's cycle length at any chosen date & time. Upload many timing sheets + a locations CSV, then scrub a calendar/time slider and watch the map recolor. |
 | *(more to come)* | New tools appear here automatically as they're added. |
 
 #### How the 4-Way Flash Checker works
@@ -39,8 +40,9 @@ analysis engine can also be used from the command line (see section 5).
 | `app.py` | **The web app to run** — SignalCheck home page + navigation |
 | `home.py` | The landing page (auto-built from the tool list) |
 | `tool_registry.py` | The list of tools — **the one place you edit to add a tool** |
-| `tools/` | One file per tool's UI (e.g. `tools/flash_check_tool.py`) |
+| `tools/` | One file per tool's UI (e.g. `tools/flash_check_tool.py`, `tools/cycle_map_tool.py`) |
 | `flash_check.py` | The 4-way-flash analysis engine + command-line tool |
+| `cycle_schedule.py` | The date/time → cycle-length resolver engine (Cycle Length Map) |
 | `flash_app.py` | Optional standalone launcher for just the flash checker |
 | `requirements.txt` | The Python packages it needs |
 | `setup.bat` | One-click **Windows** installer (creates the environment + installs packages) |
@@ -182,6 +184,44 @@ Click **⬇️ Download CSV summary** to save the whole table as a spreadsheet.
 ### Settings (left sidebar)
 Click the **»** at the top-left to open the sidebar. You can change the **flash
 pattern number** if a different controller family uses something other than 255.
+
+---
+
+## 4b. Using the 🗺️ Cycle Length Map
+
+This tool shows what cycle length every signal is running at a chosen moment.
+
+**1. Upload data (sidebar):**
+- **Timing sheets** — one `.xls` per controller (select many at once).
+- **Signal locations CSV** — places them on the map. Click **⬇️ CSV template**
+  for the format. It needs an **id**, **latitude**, and **longitude** column (a
+  **name** column is optional); headers are detected flexibly:
+
+  ```csv
+  id,name,latitude,longitude
+  31,Main + Creekside,37.7058,-121.8744
+  42,1st & Oak,37.7100,-121.8800
+  ```
+
+  The **id** is matched to the number in each timing-sheet **file name**
+  (e.g. `…TSP_BBU_31.xls` → ID `31`).
+
+**2. Pick a date & time:** use the 📅 calendar and the 🕑 time slider. They default
+to today / now; click **⏱ Now** to snap back. As you move them, the map recolors.
+
+**3. Read the map:** each signal is a dot colored by what it's running at that time:
+
+| Dot | Meaning |
+|-----|---------|
+| 🟢→🟠 gradient | **Coordinated** — green = shorter cycle, orange = longer cycle (legend shows the range) |
+| ⚪ gray | **Free** (pattern 254, or any pattern with a 0 cycle) |
+| 🔴 red | **Flash** (pattern 255) |
+
+Hover a dot for the intersection name, plan, action, pattern, and cycle. The table
+below lists every controller (including any whose ID didn't match a location).
+
+> The map's background tiles need internet access; the colored dots still render
+> without it.
 
 ---
 

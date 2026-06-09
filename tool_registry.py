@@ -37,6 +37,15 @@ TOOLS = [
                    "commands 4-way flash (pattern 255).",
         "status": "live",
     },
+    {
+        "key": "cyclemap",
+        "title": "Cycle Length Map",
+        "icon": "🗺️",
+        "page": "tools/cycle_map_tool.py",
+        "tagline": "Map every signal's cycle length at any date & time. Upload many "
+                   "timing sheets + a locations CSV; scrub the calendar/time slider.",
+        "status": "live",
+    },
 
     # ---- Add new tools below. Example of a placeholder/coming-soon entry: -----
     # {

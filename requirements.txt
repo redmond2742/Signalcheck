@@ -4,3 +4,4 @@
 xlrd>=2.0.1      # reads legacy .xls (BIFF) controller exports
 olefile>=0.46    # extracts the raw Workbook stream from the malformed OLE wrapper
 streamlit>=1.30   # web GUI (flash_app.py); not needed for the flash_check.py CLI
+pydeck>=0.8   # interactive map for the Cycle Length Map tool (ships with streamlit)
