@@ -14,9 +14,10 @@ import datetime as dt
 import streamlit as st
 
 import cycle_schedule as cs
+import live_time_slider as lts
+from st_compat import STRETCH
 
 STATE_DATE = "cyc_date"
-STATE_TIME = "cyc_time"
 
 # Colors for the non-coordinated states
 COLOR_FLASH = [214, 40, 40]
@@ -36,11 +37,6 @@ def load_locations(data):
 
 
 # ----------------------------------------------------------------------------- helpers
-def round_to_step(t, minutes=15):
-    total = (t.hour * 60 + t.minute) // minutes * minutes
-    return dt.time(total // 60, total % 60)
-
-
 def coord_color(cycle, cmin, cmax):
     """Green (short cycle) -> orange (long cycle)."""
     span = (cmax - cmin) or 1
@@ -59,6 +55,14 @@ def color_for(res, cmin, cmax):
     if state == "coord" and res["cycle"]:
         return coord_color(res["cycle"], cmin, cmax)
     return COLOR_NONE
+
+
+def fmt_when(w):
+    """Cross-platform datetime label. Avoids %-d / %-I, which raise
+    'Invalid format string' on Windows."""
+    h12 = (w.hour % 12) or 12
+    ampm = "AM" if w.hour < 12 else "PM"
+    return f"{w.strftime('%A, %B')} {w.day}, {w.year} · {h12}:{w.minute:02d} {ampm}"
 
 
 # ----------------------------------------------------------------------------- UI
@@ -95,36 +99,72 @@ if loc_file is not None:
     if loc_error:
         st.warning(f"Locations CSV: {loc_error}")
 
-# ---- Date & time controls ----
+# ---- Metrics row lives at the TOP; it's filled in after we resolve below ----
+metrics_box = st.container()
+st.divider()
+
+# ---- Date & time controls (kept right above the map) ----
 now = dt.datetime.now()
 if STATE_DATE not in st.session_state:
     st.session_state[STATE_DATE] = now.date()
-if STATE_TIME not in st.session_state:
-    st.session_state[STATE_TIME] = round_to_step(now.time())
+if "cyc_default_min" not in st.session_state:
+    st.session_state["cyc_default_min"] = (now.hour * 60 + now.minute) // 5 * 5
 
 
 def reset_to_now():
     n = dt.datetime.now()
     st.session_state[STATE_DATE] = n.date()
-    st.session_state[STATE_TIME] = round_to_step(n.time())
+    st.session_state["cyc_default_min"] = (n.hour * 60 + n.minute) // 5 * 5
+    # changing the slider key remounts it so it re-initialises to "now"
+    st.session_state["cyc_nonce"] = st.session_state.get("cyc_nonce", 0) + 1
 
 
-c_date, c_time, c_btn = st.columns([1.1, 2.2, 0.8])
+c_date, c_btn = st.columns([3, 1])
 with c_date:
     sel_date = st.date_input("📅 Date", key=STATE_DATE)
-with c_time:
-    sel_time = st.slider(
-        "🕑 Time of day", key=STATE_TIME,
-        min_value=dt.time(0, 0), max_value=dt.time(23, 45),
-        step=dt.timedelta(minutes=15), format="h:mm a",
-    )
 with c_btn:
     st.write("")
     st.write("")
-    st.button("⏱ Now", on_click=reset_to_now, use_container_width=True)
+    st.button("⏱ Now", on_click=reset_to_now,
+              help="Jump to the current date & time", **STRETCH)
 
+# Tick marks on the slider: union of cycle/state transition times for the selected
+# date, but ONLY for the signals currently visible in the map's viewport. The map
+# reports its bounds (read here from the previous run); a signal outside the view
+# contributes no ticks.
+def _in_view(loc, bounds):
+    if not bounds:
+        return True  # before the map reports, include all mapped signals
+    return (bounds["south"] <= loc["lat"] <= bounds["north"]
+            and bounds["west"] <= loc["lon"] <= bounds["east"])
+
+
+map_bounds = st.session_state.get("cyc_map")  # bounds reported by the map last run
+if locations:
+    mapped_models = [m for m in models
+                     if m.get("file_id") and cs.norm_id(m["file_id"]) in locations]
+    tick_models = [m for m in mapped_models
+                   if _in_view(locations[cs.norm_id(m["file_id"])], map_bounds)]
+else:
+    mapped_models, tick_models = [], models
+
+tick_set = set()
+for tm in tick_models:
+    tick_set.update(cs.transition_minutes(tm, sel_date))
+ticks = sorted(tick_set)
+
+nonce = st.session_state.get("cyc_nonce", 0)
+minutes = lts.live_time_slider(
+    value=st.session_state["cyc_default_min"], step=5, ticks=ticks,
+    key=f"cyc_time_{nonce}")
+sel_time = dt.time(minutes // 60, minutes % 60)
 when = dt.datetime.combine(sel_date, sel_time)
-st.markdown(f"#### Showing **{when:%A, %B %-d, %Y}** at **{when:%-I:%M %p}**")
+st.markdown(f"#### {fmt_when(when)}")
+if ticks or (locations and map_bounds):
+    in_view = f"{len(tick_models)} of {len(mapped_models)} signals in view" \
+        if (locations and map_bounds) else "all mapped signals"
+    st.caption(f"⏱ Tick marks: {len(ticks)} cycle-length change(s) on this day "
+               f"({in_view}). Zoom/pan the map to change which signals are counted.")
 
 # ---- Resolve every controller at this datetime ----
 resolved = []
@@ -138,17 +178,18 @@ coord_cycles = [r["res"]["cycle"] for r in resolved
 cmin = min(coord_cycles) if coord_cycles else 0
 cmax = max(coord_cycles) if coord_cycles else 0
 
-# ---- Summary metrics ----
-n_coord = sum(1 for r in resolved if r["res"]["state"] == "coord")
-n_free = sum(1 for r in resolved if r["res"]["state"] == "free")
-n_flash = sum(1 for r in resolved if r["res"]["state"] == "flash")
-n_err = sum(1 for r in resolved if r["res"]["state"] in ("error", "none"))
-m1, m2, m3, m4, m5 = st.columns(5)
-m1.metric("Controllers", len(resolved))
-m2.metric("🟢 Coordinated", n_coord)
-m3.metric("⚪ Free", n_free)
-m4.metric("🔴 Flash", n_flash)
-m5.metric("⚠️ Unreadable", n_err)
+# ---- Fill the metrics row at the top of the page ----
+with metrics_box:
+    n_coord = sum(1 for r in resolved if r["res"]["state"] == "coord")
+    n_free = sum(1 for r in resolved if r["res"]["state"] == "free")
+    n_flash = sum(1 for r in resolved if r["res"]["state"] == "flash")
+    n_err = sum(1 for r in resolved if r["res"]["state"] in ("error", "none"))
+    mc1, mc2, mc3, mc4, mc5 = st.columns(5)
+    mc1.metric("Controllers", len(resolved))
+    mc2.metric("🟢 Coordinated", n_coord)
+    mc3.metric("⚪ Free", n_free)
+    mc4.metric("🔴 Flash", n_flash)
+    mc5.metric("⚠️ Unreadable", n_err)
 
 # ---- Map ----
 mapped = [r for r in resolved if r["loc"]]
@@ -161,39 +202,27 @@ elif not mapped:
     st.warning("None of the uploaded timing sheets matched an ID in the locations CSV. "
                "Check that the file-name numbers match the CSV `id` column.")
 else:
-    import pydeck as pdk
+    import live_map as lm
 
     points = []
     for r in mapped:
         res, loc, m = r["res"], r["loc"], r["model"]
-        label = res["label"]
         name = loc["name"] or m["name"] or m["file"]
         tip = (f"<b>{name}</b> (ID {m['file_id']})<br/>"
-               f"Status: {label}<br/>"
+               f"Status: {res['label']}<br/>"
                f"Plan {res['plan']} · Action {res['action']} · Pattern {res['pattern']}")
         points.append({
-            "lon": loc["lon"], "lat": loc["lat"],
-            "color": color_for(res, cmin, cmax) + [220],
-            "name": name, "tip": tip,
+            "id": str(m["file_id"]),
+            "lat": loc["lat"], "lon": loc["lon"],
+            "color": color_for(res, cmin, cmax),
+            "tip": tip,
         })
 
-    center_lat = sum(p["lat"] for p in points) / len(points)
-    center_lon = sum(p["lon"] for p in points) / len(points)
-
-    layer = pdk.Layer(
-        "ScatterplotLayer", data=points,
-        get_position="[lon, lat]", get_fill_color="color",
-        get_radius=90, radius_min_pixels=8, radius_max_pixels=34,
-        pickable=True, stroked=True, get_line_color=[255, 255, 255],
-        line_width_min_pixels=1.5,
-    )
-    view = pdk.ViewState(latitude=center_lat, longitude=center_lon, zoom=12)
-    deck = pdk.Deck(
-        layers=[layer], initial_view_state=view,
-        map_provider="carto", map_style="light",
-        tooltip={"html": "{tip}", "style": {"backgroundColor": "#222", "color": "white"}},
-    )
-    st.pydeck_chart(deck, use_container_width=True)
+    center = [sum(p["lat"] for p in points) / len(points),
+              sum(p["lon"] for p in points) / len(points)]
+    # The map reports its viewport bounds via st.session_state["cyc_map"]; we read
+    # those at the top of the next run to filter the slider tick marks.
+    lm.live_map(points, center=center, zoom=12, height=520, key="cyc_map")
 
     # ---- Legend ----
     def chip(rgb, text):
@@ -231,7 +260,7 @@ for r in resolved:
         "On map": "✓" if r["loc"] else "—",
         "Notes": m["error"] or "",
     })
-st.dataframe(table, use_container_width=True, hide_index=True)
+st.dataframe(table, hide_index=True, **STRETCH)
 
 if unmapped and locations:
     st.caption("Not on map (no matching location ID): "

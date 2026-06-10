@@ -1,0 +1,90 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8" />
+<link rel="stylesheet" href="vendor/leaflet.css" />
+<style>
+  html, body { margin: 0; padding: 0; height: 100%; }
+  #map { position: absolute; inset: 0; background: #eef0f2; }
+  .leaflet-container { font: 12px/1.4 "Source Sans Pro", system-ui, sans-serif; }
+</style>
+</head>
+<body>
+  <div id="map"></div>
+
+<script src="vendor/leaflet.js"></script>
+<script>
+function post(msg){ window.parent.postMessage(Object.assign({isStreamlitMessage:true}, msg), "*"); }
+function setValue(v){ post({type:"streamlit:setComponentValue", value:v, dataType:"json"}); }
+function setHeight(h){ post({type:"streamlit:setFrameHeight", height:h}); }
+
+let map = null;
+let markers = {};          // id -> L.circleMarker
+let lastBoundsKey = "";
+
+function reportBounds(){
+  if (!map) return;
+  const b = map.getBounds();
+  const v = { north: b.getNorth(), south: b.getSouth(),
+              east: b.getEast(), west: b.getWest(), zoom: map.getZoom() };
+  const key = [v.north, v.south, v.east, v.west].map(function(x){ return x.toFixed(5); }).join(",");
+  if (key !== lastBoundsKey){ lastBoundsKey = key; setValue(v); }
+}
+
+function applyPoints(points){
+  const seen = {};
+  (points || []).forEach(function(p){
+    seen[p.id] = true;
+    const fill = "rgb(" + p.color[0] + "," + p.color[1] + "," + p.color[2] + ")";
+    let mk = markers[p.id];
+    if (!mk){
+      mk = L.circleMarker([p.lat, p.lon], {
+        radius: 9, weight: 2, color: "#ffffff",
+        fillColor: fill, fillOpacity: 0.95
+      }).addTo(map);
+      markers[p.id] = mk;
+    } else {
+      mk.setLatLng([p.lat, p.lon]);
+      mk.setStyle({ fillColor: fill });
+    }
+    mk.unbindTooltip();
+    mk.bindTooltip(p.tip, { direction: "top", opacity: 0.95, sticky: true });
+  });
+  // remove markers no longer present
+  Object.keys(markers).forEach(function(id){
+    if (!seen[id]){ map.removeLayer(markers[id]); delete markers[id]; }
+  });
+}
+
+function initMap(args){
+  const center = args.center || [37.7, -121.8];
+  const zoom = args.zoom || 12;
+  map = L.map("map", { zoomControl: true, preferCanvas: true }).setView(center, zoom);
+  L.tileLayer("https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png", {
+    maxZoom: 20, subdomains: "abcd",
+    attribution: '&copy; OpenStreetMap &copy; CARTO'
+  }).addTo(map);
+  map.on("moveend zoomend", reportBounds);
+  applyPoints(args.points);
+  setTimeout(function(){ map.invalidateSize(); reportBounds(); }, 150);
+}
+
+window.addEventListener("message", function(e){
+  if (!e.data || e.data.type !== "streamlit:render") return;
+  const args = e.data.args || {};
+  const h = args.height || 520;
+  document.body.style.height = h + "px";
+  setHeight(h);
+  if (!map){
+    initMap(args);
+  } else {
+    applyPoints(args.points);
+    map.invalidateSize();
+  }
+});
+
+post({type:"streamlit:componentReady", apiVersion:1});
+setHeight(520);
+</script>
+</body>
+</html>

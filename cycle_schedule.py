@@ -197,14 +197,27 @@ def _parse_day_plans(wb):
 
 
 def _parse_patterns(wb):
-    """Return {pattern_int: cycle_int}."""
+    """Return {pattern_int: cycle_int}.
+
+    The cycle-length column header varies between exports — some sheets label it
+    'Cycle', others 'Cycle Time'. We accept either (any header starting 'cycle')."""
     sh = fc.find_sheet(wb, "Patterns(2.4)", "Patterns(")
     if sh is None:
         raise LookupError("Patterns(2.4) sheet not found")
-    hdr_row, hdr = fc.find_header_row(sh, ["Pattern", "Cycle"])
+    hdr_row, cyc_col = None, None
+    for r in range(min(sh.nrows, 15)):
+        row = [fc.cell(sh, r, c).lower() for c in range(sh.ncols)]
+        if "pattern" not in row:
+            continue
+        for i, h in enumerate(row):
+            if h.startswith("cycle"):          # 'cycle' or 'cycle time'
+                hdr_row, cyc_col = r, i
+                break
+        if hdr_row is not None:
+            break
     if hdr_row is None:
-        raise LookupError("could not locate Pattern/Cycle header in Patterns sheet")
-    cyc_col = [h.lower() for h in hdr].index("cycle")
+        raise LookupError('could not locate Pattern / "Cycle" (or "Cycle Time") header '
+                          "in Patterns(2.4) sheet")
     out = {}
     for r in range(hdr_row + 1, sh.nrows):
         lbl = fc.cell(sh, r, 0)
@@ -313,6 +326,45 @@ def resolve(model, when):
     state, cycle, label = _classify(pattern, model["pattern_to_cycle"])
     return {"state": state, "cycle": cycle, "label": label,
             "plan": best["plan"], "tod": best["tod"], "action": action, "pattern": pattern}
+
+
+def transition_minutes(model, date):
+    """Minutes-of-day at which this controller's resolved cycle/state changes on
+    `date`. Cheap: the schedule (and thus the day plan) is fixed for the date, so
+    we only evaluate at that plan's event times. Used to put tick marks on the
+    time slider."""
+    if model.get("error"):
+        return []
+    midnight = _dt.datetime.combine(date, _dt.time(0, 0))
+    plan = resolve(model, midnight).get("plan")   # one schedule match for the day
+    if plan is None:
+        return []
+    events = model["day_plans"].get(plan, [])
+    if not events:
+        return []
+    # last action per minute wins (matches resolve semantics)
+    by_minute = {}
+    for mn, action in sorted(events):
+        by_minute[mn] = action
+
+    a2p = model["action_to_pattern"]
+    p2c = model["pattern_to_cycle"]
+
+    def key_for(action):
+        state, cycle, _ = _classify(a2p.get(action), p2c)
+        return (state, cycle)
+
+    out = []
+    prev = key_for(by_minute[max(by_minute)])      # state carried over midnight
+    for mn in sorted(by_minute):
+        if not (0 <= mn < 1440):
+            continue
+        k = key_for(by_minute[mn])
+        if k != prev:
+            if mn > 0:                              # 00:00 isn't a mid-day transition
+                out.append(mn)
+            prev = k
+    return out
 
 
 def day_timeline(model, date):

@@ -43,6 +43,9 @@ analysis engine can also be used from the command line (see section 5).
 | `tools/` | One file per tool's UI (e.g. `tools/flash_check_tool.py`, `tools/cycle_map_tool.py`) |
 | `flash_check.py` | The 4-way-flash analysis engine + command-line tool |
 | `cycle_schedule.py` | The date/time → cycle-length resolver engine (Cycle Length Map) |
+| `live_map.py` + `map_component/` | Interactive Leaflet map that reports its zoom/pan (Leaflet vendored for offline use) |
+| `live_time_slider.py` + `time_slider_component/` | Time slider that streams live while dragging and shows transition tick marks |
+| `st_compat.py` | Small Streamlit version-compatibility shim |
 | `flash_app.py` | Optional standalone launcher for just the flash checker |
 | `requirements.txt` | The Python packages it needs |
 | `setup.bat` | One-click **Windows** installer (creates the environment + installs packages) |
@@ -207,7 +210,13 @@ This tool shows what cycle length every signal is running at a chosen moment.
   (e.g. `…TSP_BBU_31.xls` → ID `31`).
 
 **2. Pick a date & time:** use the 📅 calendar and the 🕑 time slider. They default
-to today / now; click **⏱ Now** to snap back. As you move them, the map recolors.
+to today / now; click **⏱ Now** to snap back. The time slider updates the map
+**live as you drag** (you don't have to let go of the knob). Vertical **tick marks**
+on the slider mark every time of day that a signal changes cycle length on the
+selected date — so you can jump straight to the transitions. The tick marks only
+count the signals **currently visible in the map view**, so as you **zoom or pan**
+the map, the ticks update to match what you're looking at. The map keeps your
+zoom/pan as you scrub time.
 
 **3. Read the map:** each signal is a dot colored by what it's running at that time:
 
@@ -222,6 +231,9 @@ below lists every controller (including any whose ID didn't match a location).
 
 > The map's background tiles need internet access; the colored dots still render
 > without it.
+
+> **Pattern sheet variations:** the cycle-length column in `Patterns(2.4)` is read
+> whether your export labels it **`Cycle`** or **`Cycle Time`**.
 
 ---
 

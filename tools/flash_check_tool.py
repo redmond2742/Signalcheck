@@ -10,6 +10,7 @@ import os
 import streamlit as st
 
 import flash_check as fc
+from st_compat import STRETCH
 
 STATE_KEY = "flash_folder_results"  # namespaced so tools don't clash in session state
 
@@ -76,12 +77,12 @@ def render_results(results, pattern):
 
     st.dataframe(
         table,
-        use_container_width=True,
         hide_index=True,
         column_config={
             "Status": st.column_config.TextColumn(width="small"),
             "Intersection": st.column_config.TextColumn(width="large"),
         },
+        **STRETCH,
     )
 
     # ---- download ----
@@ -105,7 +106,7 @@ def render_results(results, pattern):
                     "Runs Action": d["action"],
                     "At time": d["time"],
                 } for d in r["details"] if d["active"]]
-                st.dataframe(detail, use_container_width=True, hide_index=True)
+                st.dataframe(detail, hide_index=True, **STRETCH)
 
     if inactive:
         with st.expander(f"🟡  {len(inactive)} signal(s) have flash configured only on disabled TOD slots"):
@@ -115,7 +116,7 @@ def render_results(results, pattern):
                 [{"Intersection": r["name"] or r["file"], "File": r["file"],
                   "Flash actions": r["flash_actions"], "Flash day plans": r["flash_plans"]}
                  for r in inactive],
-                use_container_width=True, hide_index=True,
+                hide_index=True, **STRETCH,
             )
 
 
