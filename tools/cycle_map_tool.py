@@ -57,12 +57,19 @@ def color_for(res, cmin, cmax):
     return COLOR_NONE
 
 
-def fmt_when(w):
-    """Cross-platform datetime label. Avoids %-d / %-I, which raise
-    'Invalid format string' on Windows."""
-    h12 = (w.hour % 12) or 12
-    ampm = "AM" if w.hour < 12 else "PM"
-    return f"{w.strftime('%A, %B')} {w.day}, {w.year} · {h12}:{w.minute:02d} {ampm}"
+def fmt_date(d):
+    """'Wednesday, June 10, 2026' — cross-platform.
+
+    Builds the string with zero-padded directives (valid on Windows, Linux, and
+    macOS), then strips the day's leading zero. Avoids the Unix-only %-d / %-I
+    and the Windows-only %#d / %#I directives, which raise 'Invalid format
+    string' on the other platform."""
+    return d.strftime("%A, %B %d, %Y").replace(" 0", " ")
+
+
+def fmt_time(t):
+    """'3:07 PM' — cross-platform (strips the hour's leading zero)."""
+    return t.strftime("%I:%M %p").lstrip("0")
 
 
 # ----------------------------------------------------------------------------- UI
@@ -159,7 +166,9 @@ minutes = lts.live_time_slider(
     key=f"cyc_time_{nonce}")
 sel_time = dt.time(minutes // 60, minutes % 60)
 when = dt.datetime.combine(sel_date, sel_time)
-st.markdown(f"#### {fmt_when(when)}")
+date_str = fmt_date(when)
+time_str = fmt_time(when)
+st.markdown(f"#### Showing **{date_str}** at **{time_str}**")
 if ticks or (locations and map_bounds):
     in_view = f"{len(tick_models)} of {len(mapped_models)} signals in view" \
         if (locations and map_bounds) else "all mapped signals"
