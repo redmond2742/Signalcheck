@@ -20,6 +20,7 @@ function setHeight(h){ post({type:"streamlit:setFrameHeight", height:h}); }
 
 let map = null;
 let markers = {};          // id -> L.circleMarker
+let lineLayer = null;      // L.layerGroup holding corridor polylines
 let lastBoundsKey = "";
 
 function reportBounds(){
@@ -29,6 +30,15 @@ function reportBounds(){
               east: b.getEast(), west: b.getWest(), zoom: map.getZoom() };
   const key = [v.north, v.south, v.east, v.west].map(function(x){ return x.toFixed(5); }).join(",");
   if (key !== lastBoundsKey){ lastBoundsKey = key; setValue(v); }
+}
+
+function applyLines(lines){
+  if (!lineLayer){ lineLayer = L.layerGroup().addTo(map); }
+  lineLayer.clearLayers();
+  (lines || []).forEach(function(ln){
+    const col = "rgb(" + ln.color[0] + "," + ln.color[1] + "," + ln.color[2] + ")";
+    L.polyline(ln.coords, { color: col, weight: 5, opacity: 0.85 }).addTo(lineLayer);
+  });
 }
 
 function applyPoints(points){
@@ -65,6 +75,7 @@ function initMap(args){
     attribution: '&copy; OpenStreetMap &copy; CARTO'
   }).addTo(map);
   map.on("moveend zoomend", reportBounds);
+  applyLines(args.lines);
   applyPoints(args.points);
   setTimeout(function(){ map.invalidateSize(); reportBounds(); }, 150);
 }
@@ -78,6 +89,7 @@ window.addEventListener("message", function(e){
   if (!map){
     initMap(args);
   } else {
+    applyLines(args.lines);
     applyPoints(args.points);
     map.invalidateSize();
   }

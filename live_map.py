@@ -18,12 +18,14 @@ _DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "map_component")
 _component = components.declare_component("live_map", path=_DIR)
 
 
-def live_map(points, center, zoom=12, height=520, key=None):
+def live_map(points, center, zoom=12, height=520, lines=None, key=None):
     """Render the map.
 
     points : list of {"id", "lat", "lon", "color":[r,g,b], "tip": html}
+    lines  : list of {"coords": [[lat,lon],...], "color":[r,g,b]} drawn as
+             polylines (used for corridor connections); pass [] for none.
     center : [lat, lon] used only on first render (view persists afterwards)
     Returns the current viewport bounds dict, or None until first reported.
     """
     return _component(points=points, center=list(center), zoom=int(zoom),
-                      height=int(height), default=None, key=key)
+                      height=int(height), lines=lines or [], default=None, key=key)

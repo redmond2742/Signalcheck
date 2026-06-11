@@ -229,6 +229,42 @@ zoom/pan as you scrub time.
 Hover a dot for the intersection name, plan, action, pattern, and cycle. The table
 below lists every controller (including any whose ID didn't match a location).
 
+**4. Map view — Signals or Corridors:** a toggle above the map switches between:
+- **Signals** — each signal is a dot colored by its cycle (Free/Flash/coordinated).
+- **Corridors** — adjacent, cycle-matched signals are linked into **corridor lines**,
+  each corridor drawn in its own color (signals not in a corridor stay gray). The
+  line connects the signals by **shortest distance** (nearest-neighbor + 2-opt), so
+  it threads cleanly through them in any orientation. In this view a second toggle,
+  **Color corridor lines by**, lets you switch from per-corridor colors to
+  **Progression speed** — each link is colored by its implied speed (slow = red,
+  ~30 mph = green, fast = blue).
+
+**5. Corridors (table below the map):** the app groups the signals **currently in
+the map view** into corridors and lists them. For each corridor the table shows its
+**name**, the **number of signals**, the **cycle length**, and the **time window**
+(start/stop) during which all of its signals hold those cycles. Two sidebar controls
+tune it:
+
+- **Max spacing between adjacent signals** — how close two signals must be to count
+  as adjacent (default ~0.5 mile).
+- **Group half-cycle signals** — include a signal running half the corridor's cycle
+  (e.g. a 60 s signal inside a 120 s corridor). A half-cycle signal is only added if
+  it's **on the corridor's street** (shares the full street name); otherwise it's left
+  out.
+
+Corridors are named by the **full street name** shared by their signals (e.g.
+`Foothill Bl`, not `Bl`). Only coordinated signals form corridors (Free/Flash are
+excluded), and the list/lines update as you scrub time or zoom/pan the map.
+
+**6. Implied progression speeds (table at the bottom):** for each corridor link, the
+two signals' **offset** difference (from `Patterns(2.4)`, in seconds, taken as the
+smaller value modulo the cycle) is used as the travel time, and divided into the
+straight-line link distance to give an **implied progression speed in mph**. The
+bottom table has one **row per corridor** and one column per **link** (Link 1, Link 2,
+…) plus an average. `—` means the offsets are equal (no implied movement) or the speed
+can't be computed. This is an *implied* speed from the offsets — not measured — and
+uses straight-line (not along-street) distance.
+
 > The map's background tiles need internet access; the colored dots still render
 > without it.
 
